@@ -1,0 +1,821 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Little Mind — NLP AI</title>
+
+<style>
+:root {
+  --bg: #0b1020;
+  --panel: #131b2e;
+  --panel2: #1a2540;
+  --text: #eef3ff;
+  --muted: #9aa8c7;
+  --accent: #8b7cff;
+  --border: #2b3856;
+  --danger: #ff7785;
+  --good: #73dfb0;
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  font-family: system-ui, -apple-system, sans-serif;
+}
+
+button, input, textarea, select { font: inherit; }
+
+button {
+  cursor: pointer;
+  border: 0;
+  border-radius: 10px;
+  padding: 11px 15px;
+  background: var(--accent);
+  color: white;
+  font-weight: 650;
+}
+
+button:hover { filter: brightness(1.12); }
+button:disabled { opacity: .5; cursor: not-allowed; }
+
+.secondary {
+  background: var(--panel2);
+  border: 1px solid var(--border);
+}
+
+.danger {
+  background: #542735;
+  border: 1px solid #81404f;
+}
+
+header {
+  padding: 22px;
+  border-bottom: 1px solid var(--border);
+  background: #10172a;
+}
+
+.header-inner, main {
+  max-width: 1150px;
+  margin: auto;
+}
+
+h1 { margin: 0; font-size: 25px; }
+h2 { font-size: 17px; margin-top: 0; }
+p { line-height: 1.6; }
+
+.subtitle {
+  color: var(--muted);
+  margin: 5px 0 0;
+  font-size: 14px;
+}
+
+main {
+  padding: 20px;
+  display: grid;
+  grid-template-columns: minmax(0, 1.6fr) minmax(260px, .8fr);
+  gap: 18px;
+}
+
+.panel {
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 18px;
+  min-width: 0;
+}
+
+.chat {
+  display: flex;
+  flex-direction: column;
+  min-height: 520px;
+}
+
+.messages {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin: 15px 0;
+}
+
+.message {
+  padding: 13px 15px;
+  border-radius: 12px;
+  background: var(--panel2);
+  overflow-wrap: anywhere;
+  white-space: pre-wrap;
+  line-height: 1.55;
+}
+
+.message.user {
+  background: #302a5c;
+  align-self: flex-end;
+  max-width: 92%;
+}
+
+.message.ai { max-width: 100%; }
+
+.message .who {
+  display: block;
+  font-size: 11px;
+  color: var(--muted);
+  margin-bottom: 5px;
+  font-weight: bold;
+  text-transform: uppercase;
+  letter-spacing: .07em;
+}
+
+.composer {
+  display: flex;
+  flex-direction: column;
+  gap: 9px;
+}
+
+textarea, input, select {
+  width: 100%;
+  background: #0d1425;
+  color: var(--text);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 12px;
+  outline: none;
+}
+
+textarea:focus, input:focus, select:focus {
+  border-color: var(--accent);
+}
+
+textarea { resize: vertical; min-height: 90px; }
+
+.button-row {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.side {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.stat-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+
+.stat {
+  background: var(--panel2);
+  padding: 13px;
+  border-radius: 10px;
+}
+
+.stat strong {
+  display: block;
+  font-size: 23px;
+}
+
+.stat span {
+  font-size: 12px;
+  color: var(--muted);
+}
+
+.muted { color: var(--muted); font-size: 13px; }
+
+code, pre {
+  background: #0b1222;
+  border-radius: 5px;
+  padding: 3px 5px;
+  color: #c7bdff;
+}
+
+pre {
+  padding: 12px;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  line-height: 1.6;
+}
+
+.knowledge-list {
+  max-height: 280px;
+  overflow: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+}
+
+.knowledge-item {
+  background: var(--panel2);
+  border-radius: 8px;
+  padding: 9px 10px;
+  font-size: 13px;
+  overflow-wrap: anywhere;
+}
+
+.knowledge-item strong { color: #c7bdff; }
+
+.command-list {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+  font-size: 13px;
+}
+
+.command-list code { display: inline-block; margin-bottom: 3px; }
+
+footer {
+  text-align: center;
+  padding: 20px;
+  color: var(--muted);
+  font-size: 12px;
+}
+
+@media (max-width: 760px) {
+  main { grid-template-columns: 1fr; padding: 12px; }
+  header { padding: 17px; }
+  .chat { min-height: 440px; }
+}
+</style>
+</head>
+
+<body>
+<header>
+  <div class="header-inner">
+    <h1>✦ Little Mind</h1>
+    <p class="subtitle">A small AI that learns from what you teach it.</p>
+  </div>
+</header>
+
+<main>
+  <section class="panel chat">
+    <h2>Conversation</h2>
+    <p class="muted">
+      Write a sentence to analyse it, or enter a command beginning with /.
+    </p>
+
+    <div id="messages" class="messages" aria-live="polite"></div>
+
+    <form id="composer" class="composer">
+      <textarea id="input" placeholder='Try: /help&#10;Or: The cat sleeps.' required></textarea>
+      <div class="button-row">
+        <button type="submit">Send</button>
+        <button type="button" class="secondary" id="clearInput">Clear input</button>
+      </div>
+    </form>
+  </section>
+
+  <aside class="side">
+    <section class="panel">
+      <h2>Its knowledge</h2>
+      <div class="stat-grid">
+        <div class="stat">
+          <strong id="wordStat">0</strong>
+          <span>Words</span>
+        </div>
+        <div class="stat">
+          <strong id="exampleStat">0</strong>
+          <span>Examples</span>
+        </div>
+        <div class="stat">
+          <strong id="meaningStat">0</strong>
+          <span>Meanings</span>
+        </div>
+        <div class="stat">
+          <strong id="patternStat">0</strong>
+          <span>Patterns</span>
+        </div>
+      </div>
+      <p class="muted">Saved in this browser, on this device.</p>
+      <div class="button-row">
+        <button type="button" class="secondary" id="refresh">Refresh</button>
+        <button type="button" class="secondary" id="export">Export knowledge</button>
+      </div>
+    </section>
+
+    <section class="panel">
+      <h2>Known words</h2>
+      <div id="knowledge" class="knowledge-list"></div>
+    </section>
+
+    <section class="panel">
+      <h2>Commands</h2>
+      <div class="command-list">
+        <div><code>/help</code><br>Show all commands.</div>
+        <div><code>/learn word=cat</code><br>Teach a word.</div>
+        <div><code>/learn-type cat=noun</code><br>Teach a grammatical type.</div>
+        <div><code>/learn-meaning happy=feeling of joy</code><br>Teach a meaning.</div>
+        <div><code>/learn-example The cat sleeps.</code><br>Teach a sentence example.</div>
+        <div><code>/learn-pattern the ___ sleeps</code><br>Teach a simple pattern.</div>
+        <div><code>/analyse The cat sleeps.</code><br>Analyse a sentence.</div>
+        <div><code>/show-knowledge</code><br>List saved knowledge.</div>
+        <div><code>/forget-word cat</code><br>Forget a word.</div>
+        <div><code>/reset</code><br>Reset all learned knowledge.</div>
+      </div>
+    </section>
+  </aside>
+</main>
+
+<footer>
+  Little Mind · A browser-based NLP learning prototype
+</footer>
+
+<script>
+"use strict";
+
+const STORAGE_KEY = "littleMindKnowledgeV1";
+
+const defaultKnowledge = () => ({
+  words: {},
+  meanings: {},
+  examples: [],
+  patterns: []
+});
+
+let knowledge = loadKnowledge();
+
+function loadKnowledge() {
+  try {
+    const saved = localStorage.getItem(STORAGE_KEY);
+    if (!saved) return defaultKnowledge();
+
+    const data = JSON.parse(saved);
+
+    return {
+      words: data.words && typeof data.words === "object"
+        ? data.words : {},
+      meanings: data.meanings && typeof data.meanings === "object"
+        ? data.meanings : {},
+      examples: Array.isArray(data.examples) ? data.examples : [],
+      patterns: Array.isArray(data.patterns) ? data.patterns : []
+    };
+  } catch {
+    return defaultKnowledge();
+  }
+}
+
+function saveKnowledge() {
+  try {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(knowledge));
+    updateKnowledgePanel();
+  } catch {
+    addMessage(
+      "My knowledge could not be saved. Your browser may have disabled local storage.",
+      "ai"
+    );
+  }
+}
+
+const $ = id => document.getElementById(id);
+
+function addMessage(text, sender = "ai") {
+  const message = document.createElement("div");
+  message.className = "message " + sender;
+
+  const who = document.createElement("span");
+  who.className = "who";
+  who.textContent = sender === "user" ? "You" : "Little Mind";
+
+  const content = document.createElement("div");
+  content.textContent = text;
+
+  message.append(who, content);
+  $("messages").appendChild(message);
+  $("messages").scrollTop = $("messages").scrollHeight;
+}
+
+function normalise(text) {
+  return text.toLowerCase().trim();
+}
+
+function tokenize(text) {
+  return text.match(/[\p{L}\p{N}]+(?:['’][\p{L}]+)*/gu) || [];
+}
+
+function splitSentences(text) {
+  return text.match(/[^.!?]+[.!?]*|[.!?]+/g)
+    ?.map(s => s.trim())
+    .filter(Boolean) || [];
+}
+
+function knownWordCount() {
+  return Object.keys(knowledge.words).length;
+}
+
+function learnWord(word) {
+  const key = normalise(word);
+  if (!key) return false;
+
+  if (!knowledge.words[key]) {
+    knowledge.words[key] = { type: "unknown" };
+  }
+  return true;
+}
+
+function analyseText(text) {
+  const words = tokenize(text);
+  const sentences = splitSentences(text);
+
+  const wordResults = words.map(original => {
+    const key = normalise(original);
+    const record = knowledge.words[key];
+
+    return {
+      word: original,
+      type: record?.type || "unknown",
+      meaning: knowledge.meanings[key] || ""
+    };
+  });
+
+  const knownCount = wordResults.filter(
+    word => word.type !== "unknown"
+      || Boolean(word.meaning)
+  ).length;
+
+  const unknownWords = [
+    ...new Set(
+      wordResults
+        .filter(word => word.type === "unknown" && !word.meaning)
+        .map(word => normalise(word.word))
+    )
+  ];
+
+  const punctuation = text.match(/[.!?]/g) || [];
+  const questions = (text.match(/\?/g) || []).length;
+  const exclamations = (text.match(/!/g) || []).length;
+
+  const lines = [
+    "TEXT ANALYSIS",
+    "────────────",
+    "Characters: " + text.length,
+    "Words: " + words.length,
+    "Sentences detected: " + sentences.length,
+    "Known words: " + knownCount,
+    "Unknown words: " + unknownWords.length,
+    "Questions: " + questions,
+    "Exclamations: " + exclamations,
+    "",
+    "WORD-BY-WORD ANALYSIS:"
+  ];
+
+  if (!words.length) lines.push("No words detected.");
+
+  for (const item of wordResults) {
+    let line = "• " + item.word + " — " + item.type;
+    if (item.meaning) line += " — " + item.meaning;
+    lines.push(line);
+  }
+
+  if (unknownWords.length) {
+    lines.push("", "WORDS I DON'T FULLY KNOW:");
+    lines.push(unknownWords.join(", "));
+    lines.push("You can teach me with /learn word=...");
+  }
+
+  const matchingPatterns = knowledge.patterns.filter(pattern =>
+    matchesPattern(text, pattern)
+  );
+
+  if (matchingPatterns.length) {
+    lines.push("", "MATCHING LEARNED PATTERNS:");
+    for (const pattern of matchingPatterns) {
+      lines.push("• " + pattern);
+    }
+  }
+
+  const exampleMatch = knowledge.examples.find(example =>
+    normalise(example.text) === normalise(text)
+  );
+
+  if (exampleMatch) {
+    lines.push("", "I have seen this exact example before.");
+  }
+
+  lines.push(
+    "",
+    "Note: word types and meanings come from my saved knowledge. " +
+    "Counts and punctuation are calculated directly."
+  );
+
+  return lines.join("\n");
+}
+
+function matchesPattern(text, pattern) {
+  const escaped = pattern
+    .split("___")
+    .map(part => part.trim().replace(/[.*+?^${}()|[\]\\]/g, "\\$&"));
+
+  if (escaped.length === 1) {
+    return normalise(text).includes(normalise(pattern));
+  }
+
+  const regexText = escaped
+    .map(part => part.replace(/\s+/g, "\\s+"))
+    .join(".+");
+
+  try {
+    return new RegExp(regexText, "i").test(text);
+  } catch {
+    return false;
+  }
+}
+
+function parsePair(value) {
+  const index = value.indexOf("=");
+  if (index < 1) return null;
+
+  return [
+    value.slice(0, index).trim(),
+    value.slice(index + 1).trim()
+  ];
+}
+
+function handleCommand(raw) {
+  const space = raw.indexOf(" ");
+  const command = (
+    space === -1 ? raw : raw.slice(0, space)
+  ).toLowerCase();
+  const argument = space === -1 ? "" : raw.slice(space + 1).trim();
+
+  switch (command) {
+    case "/help":
+      return [
+        "COMMAND GUIDE",
+        "",
+        "/learn word=cat",
+        "Add a word to my vocabulary.",
+        "",
+        "/learn-type cat=noun",
+        "Save a grammatical type. Types can be noun, verb, adjective, article, pronoun, adverb, preposition, conjunction, or your own labels.",
+        "",
+        "/learn-meaning happy=feeling of joy",
+        "Save a meaning for a word.",
+        "",
+        "/learn-example The cat sleeps.",
+        "Save a sentence as an example.",
+        "",
+        "/learn-pattern the ___ sleeps",
+        "Save a simple text pattern. The blank can match any non-empty text.",
+        "",
+        "/analyse The cat sleeps.",
+        "Analyse the text.",
+        "",
+        "/show-knowledge",
+        "Display learned words, meanings, examples, and patterns.",
+        "",
+        "/forget-word cat",
+        "Remove a word and its meaning.",
+        "",
+        "/reset",
+        "Delete all learned knowledge after confirmation.",
+        "",
+        "You can also type an ordinary sentence to analyse it."
+      ].join("\n");
+
+    case "/learn": {
+      const pair = parsePair(argument);
+      if (!pair || pair[0].toLowerCase() !== "word" || !pair[1]) {
+        return "Use this format: /learn word=cat";
+      }
+
+      learnWord(pair[1]);
+      saveKnowledge();
+      return 'I learned the word "' + pair[1] + '".';
+    }
+
+    case "/learn-type": {
+      const pair = parsePair(argument);
+      if (!pair || !pair[0] || !pair[1]) {
+        return "Use this format: /learn-type cat=noun";
+      }
+
+      const word = normalise(pair[0]);
+      learnWord(word);
+      knowledge.words[word].type = pair[1].toLowerCase();
+      saveKnowledge();
+
+      return 'I learned that "' + word + '" has type "' +
+        pair[1] + '".';
+    }
+
+    case "/learn-meaning": {
+      const pair = parsePair(argument);
+      if (!pair || !pair[0] || !pair[1]) {
+        return "Use this format: /learn-meaning happy=feeling of joy";
+      }
+
+      const word = normalise(pair[0]);
+      learnWord(word);
+      knowledge.meanings[word] = pair[1];
+      saveKnowledge();
+
+      return 'I saved a meaning for "' + word + '".';
+    }
+
+    case "/learn-example": {
+      if (!argument) return "Give me a sentence to learn.";
+
+      const exists = knowledge.examples.some(
+        item => normalise(item.text) === normalise(argument)
+      );
+
+      if (!exists) {
+        knowledge.examples.push({
+          text: argument,
+          learnedAt: new Date().toISOString()
+        });
+      }
+
+      for (const word of tokenize(argument)) learnWord(word);
+      saveKnowledge();
+
+      return "I saved that sentence as an example and added its words to my vocabulary. I have " +
+        knowledge.examples.length + " example(s). Saving an example does not automatically teach me its full meaning or grammar.";
+    }
+
+    case "/learn-pattern": {
+      if (!argument) {
+        return "Use a pattern such as: /learn-pattern the ___ sleeps";
+      }
+
+      if (!knowledge.patterns.some(
+        p => normalise(p) === normalise(argument)
+      )) {
+        knowledge.patterns.push(argument);
+      }
+
+      saveKnowledge();
+      return 'I saved the pattern "' + argument + '".';
+    }
+
+    case "/analyse":
+    case "/analyze":
+      if (!argument) return "Write some text after /analyse.";
+      return analyseText(argument);
+
+    case "/show-knowledge": {
+      const lines = ["MY SAVED KNOWLEDGE", ""];
+
+      lines.push("WORDS:");
+      const words = Object.entries(knowledge.words);
+      lines.push(words.length
+        ? words.map(([word, data]) =>
+            word + " (" + (data.type || "unknown") + ")"
+          ).join(", ")
+        : "No words learned yet.");
+
+      lines.push("", "MEANINGS:");
+      const meanings = Object.entries(knowledge.meanings);
+      lines.push(meanings.length
+        ? meanings.map(([word, meaning]) =>
+            word + " = " + meaning
+          ).join("\n")
+        : "No meanings learned yet.");
+
+      lines.push("", "EXAMPLES:");
+      lines.push(knowledge.examples.length
+        ? knowledge.examples.map(e => e.text).join("\n")
+        : "No examples learned yet.");
+
+      lines.push("", "PATTERNS:");
+      lines.push(knowledge.patterns.length
+        ? knowledge.patterns.join("\n")
+        : "No patterns learned yet.");
+
+      return lines.join("\n");
+    }
+
+    case "/forget-word": {
+      const word = normalise(argument);
+      if (!word) return "Use this format: /forget-word cat";
+
+      const existed = Boolean(
+        knowledge.words[word] || knowledge.meanings[word]
+      );
+
+      delete knowledge.words[word];
+      delete knowledge.meanings[word];
+      saveKnowledge();
+
+      return existed
+        ? 'I forgot "' + word + '".'
+        : 'I did not have "' + word + '" saved.';
+    }
+
+    case "/reset": {
+      const confirmed = window.confirm(
+        "Delete ALL learned words, meanings, examples, and patterns? This cannot be undone."
+      );
+
+      if (!confirmed) return "Reset cancelled.";
+
+      knowledge = defaultKnowledge();
+      saveKnowledge();
+      return "My learned knowledge has been reset.";
+    }
+
+    default:
+      return "I don't know the command " + command +
+        ". Type /help to see the commands I understand.";
+  }
+}
+
+function updateKnowledgePanel() {
+  $("wordStat").textContent = knownWordCount();
+  $("exampleStat").textContent = knowledge.examples.length;
+  $("meaningStat").textContent = Object.keys(knowledge.meanings).length;
+  $("patternStat").textContent = knowledge.patterns.length;
+
+  const container = $("knowledge");
+  container.replaceChildren();
+
+  const entries = Object.entries(knowledge.words);
+
+  if (!entries.length) {
+    const empty = document.createElement("div");
+    empty.className = "muted";
+    empty.textContent = "I haven't learned any words yet.";
+    container.appendChild(empty);
+    return;
+  }
+
+  for (const [word, data] of entries.sort((a, b) =>
+    a[0].localeCompare(b[0])
+  )) {
+    const item = document.createElement("div");
+    item.className = "knowledge-item";
+
+    const title = document.createElement("strong");
+    title.textContent = word;
+
+    const detail = document.createElement("span");
+    detail.textContent = " — " + (data.type || "unknown") +
+      (knowledge.meanings[word]
+        ? " · " + knowledge.meanings[word]
+        : "");
+
+    item.append(title, detail);
+    container.appendChild(item);
+  }
+}
+
+$("composer").addEventListener("submit", event => {
+  event.preventDefault();
+
+  const input = $("input");
+  const raw = input.value.trim();
+  if (!raw) return;
+
+  addMessage(raw, "user");
+
+  let response;
+
+  if (raw.startsWith("/")) {
+    response = handleCommand(raw);
+  } else {
+    response = analyseText(raw);
+  }
+
+  addMessage(response, "ai");
+  input.value = "";
+  updateKnowledgePanel();
+});
+
+$("clearInput").addEventListener("click", () => {
+  $("input").value = "";
+  $("input").focus();
+});
+
+$("refresh").addEventListener("click", () => {
+  knowledge = loadKnowledge();
+  updateKnowledgePanel();
+  addMessage("I reloaded the knowledge saved in this browser.");
+});
+
+$("export").addEventListener("click", () => {
+  const blob = new Blob(
+    [JSON.stringify(knowledge, null, 2)],
+    { type: "application/json" }
+  );
+
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement("a");
+  link.href = url;
+  link.download = "little-mind-knowledge.json";
+  link.click();
+  URL.revokeObjectURL(url);
+});
+
+updateKnowledgePanel();
+
+addMessage(
+  "Hello! I'm Little Mind. I can count and inspect text, and I can learn words, meanings, grammatical labels, examples, and patterns. Type /help to begin. I don't understand language like a person yet; my analysis depends on the rules and knowledge available to me."
+);
+</script>
+</body>
+</html>
