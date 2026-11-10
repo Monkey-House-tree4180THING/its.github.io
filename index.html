@@ -1,821 +1,577 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Little Mind — NLP AI</title>
+<title>Vocabulary Trainer</title>
 
 <style>
-:root {
-  --bg: #0b1020;
-  --panel: #131b2e;
-  --panel2: #1a2540;
-  --text: #eef3ff;
-  --muted: #9aa8c7;
-  --accent: #8b7cff;
-  --border: #2b3856;
-  --danger: #ff7785;
-  --good: #73dfb0;
+* {
+    box-sizing: border-box;
 }
-
-* { box-sizing: border-box; }
 
 body {
-  margin: 0;
-  background: var(--bg);
-  color: var(--text);
-  font-family: system-ui, -apple-system, sans-serif;
-}
-
-button, input, textarea, select { font: inherit; }
-
-button {
-  cursor: pointer;
-  border: 0;
-  border-radius: 10px;
-  padding: 11px 15px;
-  background: var(--accent);
-  color: white;
-  font-weight: 650;
-}
-
-button:hover { filter: brightness(1.12); }
-button:disabled { opacity: .5; cursor: not-allowed; }
-
-.secondary {
-  background: var(--panel2);
-  border: 1px solid var(--border);
-}
-
-.danger {
-  background: #542735;
-  border: 1px solid #81404f;
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background: #f2f3f8;
+    color: #25283b;
 }
 
 header {
-  padding: 22px;
-  border-bottom: 1px solid var(--border);
-  background: #10172a;
+    background: #34365e;
+    color: white;
+    padding: 25px;
+    text-align: center;
 }
 
-.header-inner, main {
-  max-width: 1150px;
-  margin: auto;
+header h1 {
+    margin: 0;
 }
 
-h1 { margin: 0; font-size: 25px; }
-h2 { font-size: 17px; margin-top: 0; }
-p { line-height: 1.6; }
-
-.subtitle {
-  color: var(--muted);
-  margin: 5px 0 0;
-  font-size: 14px;
+header p {
+    color: #d6d7ee;
 }
 
-main {
-  padding: 20px;
-  display: grid;
-  grid-template-columns: minmax(0, 1.6fr) minmax(260px, .8fr);
-  gap: 18px;
+.container {
+    max-width: 650px;
+    margin: 25px auto;
+    padding: 15px;
 }
 
-.panel {
-  background: var(--panel);
-  border: 1px solid var(--border);
-  border-radius: 16px;
-  padding: 18px;
-  min-width: 0;
+select, button, input {
+    font: inherit;
 }
 
-.chat {
-  display: flex;
-  flex-direction: column;
-  min-height: 520px;
+select {
+    width: 100%;
+    padding: 13px;
+    border: 1px solid #ddd;
+    border-radius: 9px;
+    margin-bottom: 15px;
+    background: white;
 }
 
-.messages {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-  margin: 15px 0;
+.progress {
+    background: #ddd;
+    height: 9px;
+    border-radius: 20px;
+    margin: 15px 0;
+    overflow: hidden;
 }
 
-.message {
-  padding: 13px 15px;
-  border-radius: 12px;
-  background: var(--panel2);
-  overflow-wrap: anywhere;
-  white-space: pre-wrap;
-  line-height: 1.55;
+.progress div {
+    height: 100%;
+    background: #7776d9;
+    width: 0%;
+    transition: .3s;
 }
 
-.message.user {
-  background: #302a5c;
-  align-self: flex-end;
-  max-width: 92%;
+.card {
+    background: white;
+    border-radius: 18px;
+    padding: 35px 20px;
+    text-align: center;
+    min-height: 260px;
+    box-shadow: 0 5px 20px #0000000c;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
 }
 
-.message.ai { max-width: 100%; }
-
-.message .who {
-  display: block;
-  font-size: 11px;
-  color: var(--muted);
-  margin-bottom: 5px;
-  font-weight: bold;
-  text-transform: uppercase;
-  letter-spacing: .07em;
+.card small {
+    color: #85859b;
+    margin-bottom: 20px;
 }
 
-.composer {
-  display: flex;
-  flex-direction: column;
-  gap: 9px;
+.card h2 {
+    font-size: 32px;
+    margin: 10px 0;
+    overflow-wrap: anywhere;
 }
 
-textarea, input, select {
-  width: 100%;
-  background: #0d1425;
-  color: var(--text);
-  border: 1px solid var(--border);
-  border-radius: 10px;
-  padding: 12px;
-  outline: none;
+.card p {
+    color: #66677c;
+    line-height: 1.6;
 }
 
-textarea:focus, input:focus, select:focus {
-  border-color: var(--accent);
+button {
+    border: none;
+    border-radius: 9px;
+    padding: 12px 17px;
+    cursor: pointer;
+    margin: 5px;
+    background: #e9e9f5;
+    color: #34365e;
+    font-weight: bold;
 }
 
-textarea { resize: vertical; min-height: 90px; }
-
-.button-row {
-  display: flex;
-  gap: 8px;
-  flex-wrap: wrap;
+button:hover {
+    opacity: .85;
 }
 
-.side {
-  display: flex;
-  flex-direction: column;
-  gap: 18px;
+.primary {
+    background: #5555aa;
+    color: white;
 }
 
-.stat-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 10px;
+.green {
+    background: #d9f3e1;
+    color: #267342;
 }
 
-.stat {
-  background: var(--panel2);
-  padding: 13px;
-  border-radius: 10px;
+.red {
+    background: #ffe1e1;
+    color: #a33a3a;
 }
 
-.stat strong {
-  display: block;
-  font-size: 23px;
+.controls {
+    text-align: center;
+    margin-top: 20px;
 }
 
-.stat span {
-  font-size: 12px;
-  color: var(--muted);
+.stats {
+    display: flex;
+    justify-content: space-around;
+    text-align: center;
+    margin: 20px 0;
 }
 
-.muted { color: var(--muted); font-size: 13px; }
-
-code, pre {
-  background: #0b1222;
-  border-radius: 5px;
-  padding: 3px 5px;
-  color: #c7bdff;
+.stats strong {
+    display: block;
+    font-size: 22px;
 }
 
-pre {
-  padding: 12px;
-  white-space: pre-wrap;
-  overflow-wrap: anywhere;
-  line-height: 1.6;
+.tabs {
+    display: flex;
+    margin-bottom: 15px;
 }
 
-.knowledge-list {
-  max-height: 280px;
-  overflow: auto;
-  display: flex;
-  flex-direction: column;
-  gap: 7px;
+.tabs button {
+    flex: 1;
 }
 
-.knowledge-item {
-  background: var(--panel2);
-  border-radius: 8px;
-  padding: 9px 10px;
-  font-size: 13px;
-  overflow-wrap: anywhere;
+input {
+    width: 100%;
+    padding: 14px;
+    border: 1px solid #ddd;
+    border-radius: 9px;
+    margin-top: 15px;
 }
 
-.knowledge-item strong { color: #c7bdff; }
-
-.command-list {
-  display: flex;
-  flex-direction: column;
-  gap: 7px;
-  font-size: 13px;
+#feedback {
+    min-height: 30px;
+    font-weight: bold;
+    text-align: center;
+    margin-top: 12px;
 }
 
-.command-list code { display: inline-block; margin-bottom: 3px; }
+.hidden {
+    display: none;
+}
 
 footer {
-  text-align: center;
-  padding: 20px;
-  color: var(--muted);
-  font-size: 12px;
-}
-
-@media (max-width: 760px) {
-  main { grid-template-columns: 1fr; padding: 12px; }
-  header { padding: 17px; }
-  .chat { min-height: 440px; }
+    text-align: center;
+    color: #999;
+    padding: 25px;
+    font-size: 13px;
 }
 </style>
 </head>
 
 <body>
+
 <header>
-  <div class="header-inner">
-    <h1>✦ Little Mind</h1>
-    <p class="subtitle">A small AI that learns from what you teach it.</p>
-  </div>
+    <h1>WordWise</h1>
+    <p>Your personal vocabulary and spelling trainer.</p>
 </header>
 
-<main>
-  <section class="panel chat">
-    <h2>Conversation</h2>
-    <p class="muted">
-      Write a sentence to analyse it, or enter a command beginning with /.
-    </p>
+<div class="container">
 
-    <div id="messages" class="messages" aria-live="polite"></div>
+    <label>Select vocabulary list:</label>
 
-    <form id="composer" class="composer">
-      <textarea id="input" placeholder='Try: /help&#10;Or: The cat sleeps.' required></textarea>
-      <div class="button-row">
-        <button type="submit">Send</button>
-        <button type="button" class="secondary" id="clearInput">Clear input</button>
-      </div>
-    </form>
-  </section>
+    <select id="listSelect" onchange="changeList()">
+        <option value="0">List 1 – City Beat Dreams (Pages 1–4)</option>
+        <option value="1">List 2 – City Beat Dreams (Pages 5–8)</option>
+        <option value="2">List 2 – The Brother Who Failed (Pages 9–12)</option>
+        <option value="all">All vocabulary lists</option>
+    </select>
 
-  <aside class="side">
-    <section class="panel">
-      <h2>Its knowledge</h2>
-      <div class="stat-grid">
-        <div class="stat">
-          <strong id="wordStat">0</strong>
-          <span>Words</span>
+    <div class="tabs">
+        <button onclick="setMode('flash')">Flashcards</button>
+        <button onclick="setMode('quiz')">Quiz Mode</button>
+    </div>
+
+    <div class="stats">
+        <div>
+            <strong id="number">1/1</strong>
+            <small>Card</small>
         </div>
-        <div class="stat">
-          <strong id="exampleStat">0</strong>
-          <span>Examples</span>
+        <div>
+            <strong id="learned">0</strong>
+            <small>Mastered</small>
         </div>
-        <div class="stat">
-          <strong id="meaningStat">0</strong>
-          <span>Meanings</span>
+        <div>
+            <strong id="score">0</strong>
+            <small>Quiz Score</small>
         </div>
-        <div class="stat">
-          <strong id="patternStat">0</strong>
-          <span>Patterns</span>
+    </div>
+
+    <div class="progress">
+        <div id="progressBar"></div>
+    </div>
+
+    <!-- FLASHCARD MODE -->
+
+    <section id="flashMode">
+
+        <div class="card">
+            <small id="cardLabel">VOCABULARY WORD</small>
+            <h2 id="word">Loading...</h2>
+            <p id="definition" class="hidden"></p>
         </div>
-      </div>
-      <p class="muted">Saved in this browser, on this device.</p>
-      <div class="button-row">
-        <button type="button" class="secondary" id="refresh">Refresh</button>
-        <button type="button" class="secondary" id="export">Export knowledge</button>
-      </div>
+
+        <div class="controls">
+            <button class="primary" onclick="flipCard()" id="flipButton">
+                Show Answer
+            </button>
+            <br>
+            <button onclick="previousCard()">← Previous</button>
+            <button onclick="nextCard()">Next →</button>
+            <br>
+            <button class="green" onclick="markLearned(true)">✓ Got it</button>
+            <button class="red" onclick="markLearned(false)">↻ Still learning</button>
+            <br>
+            <button onclick="shuffleCards()">🔀 Shuffle</button>
+        </div>
+
     </section>
 
-    <section class="panel">
-      <h2>Known words</h2>
-      <div id="knowledge" class="knowledge-list"></div>
+    <!-- QUIZ MODE -->
+
+    <section id="quizMode" class="hidden">
+
+        <div class="card">
+            <small>GUESS THE VOCABULARY WORD</small>
+            <h2 id="question">Loading...</h2>
+            <p>Type the word that matches this definition.</p>
+        </div>
+
+        <input id="answerInput" placeholder="Type your answer..."
+        autocomplete="off">
+
+        <div class="controls">
+            <button class="primary" onclick="checkAnswer()">Check Answer</button>
+            <button onclick="nextQuestion()">Next Question →</button>
+        </div>
+
+        <p id="feedback"></p>
+
     </section>
 
-    <section class="panel">
-      <h2>Commands</h2>
-      <div class="command-list">
-        <div><code>/help</code><br>Show all commands.</div>
-        <div><code>/learn word=cat</code><br>Teach a word.</div>
-        <div><code>/learn-type cat=noun</code><br>Teach a grammatical type.</div>
-        <div><code>/learn-meaning happy=feeling of joy</code><br>Teach a meaning.</div>
-        <div><code>/learn-example The cat sleeps.</code><br>Teach a sentence example.</div>
-        <div><code>/learn-pattern the ___ sleeps</code><br>Teach a simple pattern.</div>
-        <div><code>/analyse The cat sleeps.</code><br>Analyse a sentence.</div>
-        <div><code>/show-knowledge</code><br>List saved knowledge.</div>
-        <div><code>/forget-word cat</code><br>Forget a word.</div>
-        <div><code>/reset</code><br>Reset all learned knowledge.</div>
-      </div>
-    </section>
-  </aside>
-</main>
+    <div class="controls">
+        <button onclick="restart()">↻ Restart</button>
+    </div>
+
+</div>
 
 <footer>
-  Little Mind · A browser-based NLP learning prototype
+    WordWise Vocabulary Trainer · Level I · Term 1
 </footer>
 
 <script>
-"use strict";
 
-const STORAGE_KEY = "littleMindKnowledgeV1";
+const vocabulary = [
 
-const defaultKnowledge = () => ({
-  words: {},
-  meanings: {},
-  examples: [],
-  patterns: []
-});
+{
+list: 0,
+words: [
 
-let knowledge = loadKnowledge();
+["get on one's nerves", "To annoy or irritate someone."],
+["get off my case", "Stop criticizing, bothering or pressuring me."],
+["apartment", "A set of rooms used as a home within a larger building."],
+["tense", "Nervous, worried or unable to relax."],
+["college", "An educational institution for higher learning."],
+["fire escape", "An emergency staircase or exit from a building."],
+["acrobat", "A performer who does impressive physical tricks."],
+["spin", "To turn around quickly."],
+["beat", "To defeat someone or something; also a regular rhythm."],
+["split", "To divide into parts or separate."],
+["handstands", "Positions in which someone balances upside down on their hands."],
+["pattern", "A repeated design, arrangement or sequence."],
+["matter", "Something important; or the substance something is made of."],
+["supposed", "Expected or believed to be true."],
+["scholarship", "Financial assistance given to help someone study."],
+["trouble", "A problem or difficulty."],
+["bugs", "Small insects; also problems in a computer program."],
+["excitement", "A feeling of great enthusiasm or happiness."],
+["museum", "A place where historical, artistic or scientific objects are displayed."],
+["daydreaming", "Thinking about pleasant things while not paying attention."],
+["pole", "A long, narrow, upright object."],
+["exhibit", "An object or collection displayed publicly."],
+["popular", "Liked or admired by many people."],
+["planetarium", "A place where people learn about stars and planets."],
+["path", "A way or route that someone can follow."]
 
-function loadKnowledge() {
-  try {
-    const saved = localStorage.getItem(STORAGE_KEY);
-    if (!saved) return defaultKnowledge();
+]
+},
 
-    const data = JSON.parse(saved);
+{
+list: 1,
+words: [
 
-    return {
-      words: data.words && typeof data.words === "object"
-        ? data.words : {},
-      meanings: data.meanings && typeof data.meanings === "object"
-        ? data.meanings : {},
-      examples: Array.isArray(data.examples) ? data.examples : [],
-      patterns: Array.isArray(data.patterns) ? data.patterns : []
-    };
-  } catch {
-    return defaultKnowledge();
-  }
+["audience", "A group of people watching or listening to a performance."],
+["twirl", "To spin or turn around quickly."],
+["chicken out", "To decide not to do something because of fear."],
+["instruction", "Information explaining how to do something."],
+["quit", "To stop doing something."],
+["motioning", "Making a gesture to communicate or signal something."],
+["representative", "Someone chosen to speak or act for a group."],
+["flier", "A printed sheet of paper used to advertise something."],
+["bounds", "Leaps or jumps; also limits."],
+["mutter", "To speak quietly and unclearly."],
+["slouch", "To sit or stand with a drooping posture."],
+["trudge", "To walk slowly and heavily, usually because of tiredness."],
+["conversation", "A talk between two or more people."],
+["contest", "A competition in which people try to win."],
+["commercials", "Advertisements, especially those shown on television."],
+["stares", "Looks at someone or something for a long time."],
+["somersault", "A movement in which someone rolls their body over completely."],
+["barges", "Enters or moves somewhere rudely or forcefully."],
+["improve", "To make or become better."],
+["pivoting", "Turning around a fixed point."],
+["cartwheel", "A sideways movement in which someone rotates their body using their hands."],
+["creep", "To move slowly and quietly."],
+]
+
+},
+
+{
+list: 2,
+words: [
+
+["originate", "To begin or come from a particular source."],
+["tedious", "Boring and tiring because it takes a long time."],
+["engagement", "An agreement to get married; also involvement in an activity."],
+["acres", "Units used to measure areas of land."],
+["fertile", "Able to produce healthy plants or crops."],
+["shrewd", "Clever at making decisions and understanding situations."],
+["preceding", "Coming before something else in time or order."],
+["pneumonia", "An illness that causes inflammation in the lungs."],
+["homesick", "Feeling sad because you miss your home."],
+["prosperous", "Successful, wealthy or doing well financially."],
+["resolute", "Very determined and not easily discouraged."],
+["influence", "The power to affect someone's actions or opinions."],
+["complacently", "In a way that shows too much satisfaction with oneself."],
+["slumber", "Sleep."],
+["rustic", "Related to the countryside or rural life."],
+["finance", "The management of money."],
+["imperious", "Acting as though you have the right to give orders."],
+["somber", "Serious, gloomy or sad."],
+["envy", "A feeling of wanting something someone else has."],
+["contradict", "To say the opposite of what someone else has said."],
+["emphatically", "In a strong, definite and forceful way."],
+["disgrace", "A loss of respect or honour; shame."]
+]
+
 }
 
-function saveKnowledge() {
-  try {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(knowledge));
-    updateKnowledgePanel();
-  } catch {
-    addMessage(
-      "My knowledge could not be saved. Your browser may have disabled local storage.",
-      "ai"
+];
+
+let cards = [];
+let index = 0;
+let flipped = false;
+let mode = "flash";
+let mastered = new Set();
+let quizScore = 0;
+let quizAnswered = false;
+
+function changeList() {
+
+    const value = document.getElementById("listSelect").value;
+
+    if (value === "all") {
+        cards = vocabulary.flatMap(group => group.words);
+    } else {
+        cards = vocabulary[Number(value)].words.slice();
+    }
+
+    index = 0;
+    flipped = false;
+    quizScore = 0;
+    quizAnswered = false;
+
+    update();
+}
+
+function update() {
+
+    if (!cards.length) return;
+
+    index = Math.max(0, Math.min(index, cards.length - 1));
+
+    document.getElementById("number").textContent =
+        (index + 1) + "/" + cards.length;
+
+    document.getElementById("learned").textContent =
+        mastered.size;
+
+    document.getElementById("score").textContent =
+        quizScore;
+
+    document.getElementById("progressBar").style.width =
+        ((index + 1) / cards.length * 100) + "%";
+
+    document.getElementById("word").textContent =
+        cards[index][0];
+
+    document.getElementById("definition").textContent =
+        cards[index][1];
+
+    document.getElementById("definition").classList.toggle(
+        "hidden", !flipped
     );
-  }
+
+    document.getElementById("word").classList.toggle(
+        "hidden", flipped
+    );
+
+    document.getElementById("cardLabel").textContent =
+        flipped ? "DEFINITION" : "VOCABULARY WORD";
+
+    document.getElementById("flipButton").textContent =
+        flipped ? "Show Word" : "Show Answer";
+
+    document.getElementById("question").textContent =
+        cards[index][1];
+
+    document.getElementById("answerInput").value = "";
+
+    document.getElementById("feedback").textContent = "";
+
+    quizAnswered = false;
 }
 
-const $ = id => document.getElementById(id);
-
-function addMessage(text, sender = "ai") {
-  const message = document.createElement("div");
-  message.className = "message " + sender;
-
-  const who = document.createElement("span");
-  who.className = "who";
-  who.textContent = sender === "user" ? "You" : "Little Mind";
-
-  const content = document.createElement("div");
-  content.textContent = text;
-
-  message.append(who, content);
-  $("messages").appendChild(message);
-  $("messages").scrollTop = $("messages").scrollHeight;
+function flipCard() {
+    flipped = !flipped;
+    update();
 }
 
-function normalise(text) {
-  return text.toLowerCase().trim();
+function nextCard() {
+    index = (index + 1) % cards.length;
+    flipped = false;
+    update();
 }
 
-function tokenize(text) {
-  return text.match(/[\p{L}\p{N}]+(?:['’][\p{L}]+)*/gu) || [];
+function previousCard() {
+    index = (index - 1 + cards.length) % cards.length;
+    flipped = false;
+    update();
 }
 
-function splitSentences(text) {
-  return text.match(/[^.!?]+[.!?]*|[.!?]+/g)
-    ?.map(s => s.trim())
-    .filter(Boolean) || [];
-}
+function markLearned(value) {
 
-function knownWordCount() {
-  return Object.keys(knowledge.words).length;
-}
+    const key = cards[index][0];
 
-function learnWord(word) {
-  const key = normalise(word);
-  if (!key) return false;
-
-  if (!knowledge.words[key]) {
-    knowledge.words[key] = { type: "unknown" };
-  }
-  return true;
-}
-
-function analyseText(text) {
-  const words = tokenize(text);
-  const sentences = splitSentences(text);
-
-  const wordResults = words.map(original => {
-    const key = normalise(original);
-    const record = knowledge.words[key];
-
-    return {
-      word: original,
-      type: record?.type || "unknown",
-      meaning: knowledge.meanings[key] || ""
-    };
-  });
-
-  const knownCount = wordResults.filter(
-    word => word.type !== "unknown"
-      || Boolean(word.meaning)
-  ).length;
-
-  const unknownWords = [
-    ...new Set(
-      wordResults
-        .filter(word => word.type === "unknown" && !word.meaning)
-        .map(word => normalise(word.word))
-    )
-  ];
-
-  const punctuation = text.match(/[.!?]/g) || [];
-  const questions = (text.match(/\?/g) || []).length;
-  const exclamations = (text.match(/!/g) || []).length;
-
-  const lines = [
-    "TEXT ANALYSIS",
-    "────────────",
-    "Characters: " + text.length,
-    "Words: " + words.length,
-    "Sentences detected: " + sentences.length,
-    "Known words: " + knownCount,
-    "Unknown words: " + unknownWords.length,
-    "Questions: " + questions,
-    "Exclamations: " + exclamations,
-    "",
-    "WORD-BY-WORD ANALYSIS:"
-  ];
-
-  if (!words.length) lines.push("No words detected.");
-
-  for (const item of wordResults) {
-    let line = "• " + item.word + " — " + item.type;
-    if (item.meaning) line += " — " + item.meaning;
-    lines.push(line);
-  }
-
-  if (unknownWords.length) {
-    lines.push("", "WORDS I DON'T FULLY KNOW:");
-    lines.push(unknownWords.join(", "));
-    lines.push("You can teach me with /learn word=...");
-  }
-
-  const matchingPatterns = knowledge.patterns.filter(pattern =>
-    matchesPattern(text, pattern)
-  );
-
-  if (matchingPatterns.length) {
-    lines.push("", "MATCHING LEARNED PATTERNS:");
-    for (const pattern of matchingPatterns) {
-      lines.push("• " + pattern);
-    }
-  }
-
-  const exampleMatch = knowledge.examples.find(example =>
-    normalise(example.text) === normalise(text)
-  );
-
-  if (exampleMatch) {
-    lines.push("", "I have seen this exact example before.");
-  }
-
-  lines.push(
-    "",
-    "Note: word types and meanings come from my saved knowledge. " +
-    "Counts and punctuation are calculated directly."
-  );
-
-  return lines.join("\n");
-}
-
-function matchesPattern(text, pattern) {
-  const escaped = pattern
-    .split("___")
-    .map(part => part.trim().replace(/[.*+?^${}()|[\]\\]/g, "\\$&"));
-
-  if (escaped.length === 1) {
-    return normalise(text).includes(normalise(pattern));
-  }
-
-  const regexText = escaped
-    .map(part => part.replace(/\s+/g, "\\s+"))
-    .join(".+");
-
-  try {
-    return new RegExp(regexText, "i").test(text);
-  } catch {
-    return false;
-  }
-}
-
-function parsePair(value) {
-  const index = value.indexOf("=");
-  if (index < 1) return null;
-
-  return [
-    value.slice(0, index).trim(),
-    value.slice(index + 1).trim()
-  ];
-}
-
-function handleCommand(raw) {
-  const space = raw.indexOf(" ");
-  const command = (
-    space === -1 ? raw : raw.slice(0, space)
-  ).toLowerCase();
-  const argument = space === -1 ? "" : raw.slice(space + 1).trim();
-
-  switch (command) {
-    case "/help":
-      return [
-        "COMMAND GUIDE",
-        "",
-        "/learn word=cat",
-        "Add a word to my vocabulary.",
-        "",
-        "/learn-type cat=noun",
-        "Save a grammatical type. Types can be noun, verb, adjective, article, pronoun, adverb, preposition, conjunction, or your own labels.",
-        "",
-        "/learn-meaning happy=feeling of joy",
-        "Save a meaning for a word.",
-        "",
-        "/learn-example The cat sleeps.",
-        "Save a sentence as an example.",
-        "",
-        "/learn-pattern the ___ sleeps",
-        "Save a simple text pattern. The blank can match any non-empty text.",
-        "",
-        "/analyse The cat sleeps.",
-        "Analyse the text.",
-        "",
-        "/show-knowledge",
-        "Display learned words, meanings, examples, and patterns.",
-        "",
-        "/forget-word cat",
-        "Remove a word and its meaning.",
-        "",
-        "/reset",
-        "Delete all learned knowledge after confirmation.",
-        "",
-        "You can also type an ordinary sentence to analyse it."
-      ].join("\n");
-
-    case "/learn": {
-      const pair = parsePair(argument);
-      if (!pair || pair[0].toLowerCase() !== "word" || !pair[1]) {
-        return "Use this format: /learn word=cat";
-      }
-
-      learnWord(pair[1]);
-      saveKnowledge();
-      return 'I learned the word "' + pair[1] + '".';
+    if (value) {
+        mastered.add(key);
+    } else {
+        mastered.delete(key);
     }
 
-    case "/learn-type": {
-      const pair = parsePair(argument);
-      if (!pair || !pair[0] || !pair[1]) {
-        return "Use this format: /learn-type cat=noun";
-      }
+    document.getElementById("learned").textContent =
+        mastered.size;
 
-      const word = normalise(pair[0]);
-      learnWord(word);
-      knowledge.words[word].type = pair[1].toLowerCase();
-      saveKnowledge();
-
-      return 'I learned that "' + word + '" has type "' +
-        pair[1] + '".';
-    }
-
-    case "/learn-meaning": {
-      const pair = parsePair(argument);
-      if (!pair || !pair[0] || !pair[1]) {
-        return "Use this format: /learn-meaning happy=feeling of joy";
-      }
-
-      const word = normalise(pair[0]);
-      learnWord(word);
-      knowledge.meanings[word] = pair[1];
-      saveKnowledge();
-
-      return 'I saved a meaning for "' + word + '".';
-    }
-
-    case "/learn-example": {
-      if (!argument) return "Give me a sentence to learn.";
-
-      const exists = knowledge.examples.some(
-        item => normalise(item.text) === normalise(argument)
-      );
-
-      if (!exists) {
-        knowledge.examples.push({
-          text: argument,
-          learnedAt: new Date().toISOString()
-        });
-      }
-
-      for (const word of tokenize(argument)) learnWord(word);
-      saveKnowledge();
-
-      return "I saved that sentence as an example and added its words to my vocabulary. I have " +
-        knowledge.examples.length + " example(s). Saving an example does not automatically teach me its full meaning or grammar.";
-    }
-
-    case "/learn-pattern": {
-      if (!argument) {
-        return "Use a pattern such as: /learn-pattern the ___ sleeps";
-      }
-
-      if (!knowledge.patterns.some(
-        p => normalise(p) === normalise(argument)
-      )) {
-        knowledge.patterns.push(argument);
-      }
-
-      saveKnowledge();
-      return 'I saved the pattern "' + argument + '".';
-    }
-
-    case "/analyse":
-    case "/analyze":
-      if (!argument) return "Write some text after /analyse.";
-      return analyseText(argument);
-
-    case "/show-knowledge": {
-      const lines = ["MY SAVED KNOWLEDGE", ""];
-
-      lines.push("WORDS:");
-      const words = Object.entries(knowledge.words);
-      lines.push(words.length
-        ? words.map(([word, data]) =>
-            word + " (" + (data.type || "unknown") + ")"
-          ).join(", ")
-        : "No words learned yet.");
-
-      lines.push("", "MEANINGS:");
-      const meanings = Object.entries(knowledge.meanings);
-      lines.push(meanings.length
-        ? meanings.map(([word, meaning]) =>
-            word + " = " + meaning
-          ).join("\n")
-        : "No meanings learned yet.");
-
-      lines.push("", "EXAMPLES:");
-      lines.push(knowledge.examples.length
-        ? knowledge.examples.map(e => e.text).join("\n")
-        : "No examples learned yet.");
-
-      lines.push("", "PATTERNS:");
-      lines.push(knowledge.patterns.length
-        ? knowledge.patterns.join("\n")
-        : "No patterns learned yet.");
-
-      return lines.join("\n");
-    }
-
-    case "/forget-word": {
-      const word = normalise(argument);
-      if (!word) return "Use this format: /forget-word cat";
-
-      const existed = Boolean(
-        knowledge.words[word] || knowledge.meanings[word]
-      );
-
-      delete knowledge.words[word];
-      delete knowledge.meanings[word];
-      saveKnowledge();
-
-      return existed
-        ? 'I forgot "' + word + '".'
-        : 'I did not have "' + word + '" saved.';
-    }
-
-    case "/reset": {
-      const confirmed = window.confirm(
-        "Delete ALL learned words, meanings, examples, and patterns? This cannot be undone."
-      );
-
-      if (!confirmed) return "Reset cancelled.";
-
-      knowledge = defaultKnowledge();
-      saveKnowledge();
-      return "My learned knowledge has been reset.";
-    }
-
-    default:
-      return "I don't know the command " + command +
-        ". Type /help to see the commands I understand.";
-  }
+    nextCard();
 }
 
-function updateKnowledgePanel() {
-  $("wordStat").textContent = knownWordCount();
-  $("exampleStat").textContent = knowledge.examples.length;
-  $("meaningStat").textContent = Object.keys(knowledge.meanings).length;
-  $("patternStat").textContent = knowledge.patterns.length;
+function shuffleCards() {
 
-  const container = $("knowledge");
-  container.replaceChildren();
+    for (let i = cards.length - 1; i > 0; i--) {
+        let j = Math.floor(Math.random() * (i + 1));
+        [cards[i], cards[j]] = [cards[j], cards[i]];
+    }
 
-  const entries = Object.entries(knowledge.words);
-
-  if (!entries.length) {
-    const empty = document.createElement("div");
-    empty.className = "muted";
-    empty.textContent = "I haven't learned any words yet.";
-    container.appendChild(empty);
-    return;
-  }
-
-  for (const [word, data] of entries.sort((a, b) =>
-    a[0].localeCompare(b[0])
-  )) {
-    const item = document.createElement("div");
-    item.className = "knowledge-item";
-
-    const title = document.createElement("strong");
-    title.textContent = word;
-
-    const detail = document.createElement("span");
-    detail.textContent = " — " + (data.type || "unknown") +
-      (knowledge.meanings[word]
-        ? " · " + knowledge.meanings[word]
-        : "");
-
-    item.append(title, detail);
-    container.appendChild(item);
-  }
+    index = 0;
+    flipped = false;
+    update();
 }
 
-$("composer").addEventListener("submit", event => {
-  event.preventDefault();
+function setMode(selected) {
 
-  const input = $("input");
-  const raw = input.value.trim();
-  if (!raw) return;
+    mode = selected;
 
-  addMessage(raw, "user");
+    document.getElementById("flashMode").classList.toggle(
+        "hidden", mode !== "flash"
+    );
 
-  let response;
+    document.getElementById("quizMode").classList.toggle(
+        "hidden", mode !== "quiz"
+    );
 
-  if (raw.startsWith("/")) {
-    response = handleCommand(raw);
-  } else {
-    response = analyseText(raw);
-  }
+    update();
+}
 
-  addMessage(response, "ai");
-  input.value = "";
-  updateKnowledgePanel();
-});
+function checkAnswer() {
 
-$("clearInput").addEventListener("click", () => {
-  $("input").value = "";
-  $("input").focus();
-});
+    if (quizAnswered) return;
 
-$("refresh").addEventListener("click", () => {
-  knowledge = loadKnowledge();
-  updateKnowledgePanel();
-  addMessage("I reloaded the knowledge saved in this browser.");
-});
+    const answer = document.getElementById("answerInput")
+        .value.trim().toLowerCase();
 
-$("export").addEventListener("click", () => {
-  const blob = new Blob(
-    [JSON.stringify(knowledge, null, 2)],
-    { type: "application/json" }
-  );
+    const correct = cards[index][0].toLowerCase();
 
-  const url = URL.createObjectURL(blob);
-  const link = document.createElement("a");
-  link.href = url;
-  link.download = "little-mind-knowledge.json";
-  link.click();
-  URL.revokeObjectURL(url);
-});
+    const feedback = document.getElementById("feedback");
 
-updateKnowledgePanel();
+    if (!answer) {
+        feedback.textContent = "Type an answer first!";
+        feedback.style.color = "#a33a3a";
+        return;
+    }
 
-addMessage(
-  "Hello! I'm Little Mind. I can count and inspect text, and I can learn words, meanings, grammatical labels, examples, and patterns. Type /help to begin. I don't understand language like a person yet; my analysis depends on the rules and knowledge available to me."
+    quizAnswered = true;
+
+    if (answer === correct) {
+
+        quizScore++;
+
+        feedback.textContent = "✓ Correct! Well done!";
+        feedback.style.color = "#267342";
+
+    } else {
+
+        feedback.textContent =
+            "Not quite! The correct answer is: " + cards[index][0];
+
+        feedback.style.color = "#a33a3a";
+    }
+
+    document.getElementById("score").textContent = quizScore;
+}
+
+function nextQuestion() {
+    index = (index + 1) % cards.length;
+    update();
+}
+
+function restart() {
+
+    index = 0;
+    quizScore = 0;
+    mastered.clear();
+    flipped = false;
+
+    changeList();
+}
+
+document.getElementById("answerInput").addEventListener(
+    "keydown", function(event) {
+        if (event.key === "Enter") checkAnswer();
+    }
 );
+
+changeList();
+
 </script>
+
 </body>
 </html>
